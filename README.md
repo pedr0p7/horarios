@@ -1,4 +1,4 @@
-# horarios
+# Horários
 
 Trabalho #01 da matéria de AED2 - UFG.
 
@@ -14,9 +14,9 @@ Description Problem
 
 2) Se a sua equipe está com o projeto "Colisões em Horários de Aulas", o passo (1) significa (em ordem de complexidade de implementação)):
 
-      (a) a "interface" da aplicação está pronta, sendo possível ao usuário escolher um arquivo (CSV) para ser processado por ela;
+       (a) a "interface" da aplicação está pronta, sendo possível ao usuário escolher um arquivo (CSV) para ser processado por ela;
 
-      (b) a aplicação consegue "ler" (e validar) um arquivo no formato de entrada especificado e mostrá-lo na tela (ou gerar um outro arquivo -- arquivo de saída);
+       (b) a aplicação consegue "ler" (e validar) um arquivo no formato de entrada especificado e mostrá-lo na tela (ou gerar um outro arquivo -- arquivo de saída);
 
        (c) a aplicação consegue "gerar a árvore" que permitirá que as colisões sejam identificadas;
 
