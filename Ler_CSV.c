@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 void lerArquivoCSV(const char* nomeArquivo) {
     FILE *arquivo;
     char *linha = NULL;
@@ -9,7 +8,7 @@ void lerArquivoCSV(const char* nomeArquivo) {
 
     arquivo = fopen(nomeArquivo, "r");
     if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo.\n");
+        printf("Arquivo não encontrado.\n");
         return;
     }
 
@@ -22,20 +21,22 @@ void lerArquivoCSV(const char* nomeArquivo) {
         printf("\n");
     }
 
-    fclose(arquivo);
     free(linha);
+    fclose(arquivo);
 }
 
 int main() {
     char nomeArquivo[100];
 
     printf("Digite o nome do arquivo CSV: ");
-    scanf("%s", nomeArquivo);
+    fgets(nomeArquivo, sizeof(nomeArquivo), stdin);
+
+    // Remover o caractere de nova linha '\n' lido pelo fgets
+    nomeArquivo[strcspn(nomeArquivo, "\n")] = '\0';
 
     lerArquivoCSV(nomeArquivo);
 
     return 0;
 }
-
 
 
