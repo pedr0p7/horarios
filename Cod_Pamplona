@@ -2,49 +2,62 @@
 #include <commctrl.h>
 #include <stdio.h>
 #include "resource.h"
+#include "ar1.h"
 
 HINSTANCE hInst;
-HWND h_caixa1,h_colisao;
+HWND h_caixa1, h_colisao;
 
 BOOL CALLBACK DlgMain(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    switch(uMsg){
-
-    case WM_INITDIALOG:{
-        //caixa detexto 1//
-            h_caixa1  =  GetDlgItem(hwndDlg, CAIXATEXTO1);
-            h_colisao =  GetDlgItem(hwndDlg, COLISAO);
-    }
-    return TRUE;
-
-        case WM_CLOSE:{
-
-        EndDialog(hwndDlg, 0);
+    switch (uMsg) {
+        case WM_INITDIALOG: {
+            // caixa de texto 1
+            h_caixa1 = GetDlgItem(hwndDlg, CAIXATEXTO1);
+            // caixa de texto de colisões
+            h_colisao = GetDlgItem(hwndDlg, COLISAO);
+            return TRUE;
         }
-    return TRUE;
 
-            case WM_COMMAND:{
+        case WM_CLOSE: {
+            EndDialog(hwndDlg, 0);
+            return TRUE;
+        }
 
-            switch(LOWORD(wParam)){
-                //confg botao//
-            case BOTAO:
-            char caixa[100];
-            // Obtendo o texto da caixa de texto h_caixa1
-            GetWindowText(h_caixa1, caixa, sizeof(caixa));
-            // Definindo o texto da caixa de texto h_colisao
-            SetWindowText(h_colisao, caixa);
-            break;
+        case WM_COMMAND: {
+            switch (LOWORD(wParam)) {
+                case BOTAO: {
+                    char nomearquivo[100];
+                    GetWindowText(h_caixa1, nomearquivo, sizeof(nomearquivo));
+
+                    Node* root = leituraArquivo(nomearquivo);
+                    if (root != NULL) {
+                        // Criando uma string para armazenar a representação da árvore
+                        char arvoreString[1000];
+                        snprintf(arvoreString, sizeof(arvoreString), "Árvore:\r\n");
+                        imprimirArvoreString(root, arvoreString, sizeof(arvoreString));
+
+                        // Definindo o texto da caixa de texto h_colisao
+                        SetWindowText(h_colisao, arvoreString);
+
+                        // Liberando a memória da árvore
+                        liberarArvore(root);
+                    } else {
+                        SetWindowText(h_colisao, "Erro ao ler o arquivo.");
+                    }
+
+                    break;
+                }
+            }
+            return TRUE;
         }
     }
-    return TRUE;
-    }
+
     return FALSE;
 }
 
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
-{
-    hInst=hInstance;
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+    hInst = hInstance;
     InitCommonControls();
     return DialogBox(hInst, MAKEINTRESOURCE(DLG_MAIN), NULL, (DLGPROC)DlgMain);
 }
