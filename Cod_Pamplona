@@ -4,26 +4,36 @@
 #include "resource.h"
 
 HINSTANCE hInst;
+HWND h_caixa1,h_colisao;
 
 BOOL CALLBACK DlgMain(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    switch(uMsg)
-    {
-    case WM_INITDIALOG:
-    {
+    switch(uMsg){
+
+    case WM_INITDIALOG:{
+        //caixa detexto 1//
+            h_caixa1  =  GetDlgItem(hwndDlg, CAIXATEXTO1);
+            h_colisao =  GetDlgItem(hwndDlg, COLISAO);
     }
     return TRUE;
 
-    case WM_CLOSE:
-    {
+        case WM_CLOSE:{
+
         EndDialog(hwndDlg, 0);
-    }
+        }
     return TRUE;
 
-    case WM_COMMAND:
-    {
-        switch(LOWORD(wParam))
-        {
+            case WM_COMMAND:{
+
+            switch(LOWORD(wParam)){
+                //confg botao//
+            case BOTAO:
+            char caixa[100];
+            // Obtendo o texto da caixa de texto h_caixa1
+            GetWindowText(h_caixa1, caixa, sizeof(caixa));
+            // Definindo o texto da caixa de texto h_colisao
+            SetWindowText(h_colisao, caixa);
+            break;
         }
     }
     return TRUE;
