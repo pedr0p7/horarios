@@ -3,9 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-
 // Definição da estrutura do arquivo de entrada
-
 typedef struct  {
     
     int id;
@@ -41,204 +39,150 @@ typedef struct  {
 
 } DadosEntrada;
 
-typedef struct Node{
+typedef struct Node {
     int id;
-    struct Node* filho;
-    struct Node* irmao;
+    int level;
+    struct Node* children;
+    int numChildren;
 } Node;
 
-Node* createNode(int id){
+Node* createNode(int id, int level) {
     Node* newNode = (Node*)malloc(sizeof(Node));
     newNode->id = id;
-    newNode->filho = NULL;
-    newNode->irmao = NULL;
-
+    newNode->level = level;
+    newNode->children = NULL;
+    newNode->numChildren = 0;
     return newNode;
 }
 
-void addFilho(Node* pai, Node* filho){
-
-    if(pai->filho == NULL){
-        pai->filho = filho;
-    } 
-        else{
-
-            Node* ultimoIrmao = pai->filho;
-            while (ultimoIrmao->irmao != NULL) {
-                ultimoIrmao = ultimoIrmao->irmao;
-            }
- 
-        ultimoIrmao->irmao = filho;
-    }
-
+void addChild(Node* parent, int id, int level) {
+    parent->numChildren++;
+    parent->children = (Node*)realloc(parent->children, parent->numChildren * sizeof(Node));
+    parent->children[parent->numChildren - 1] = *createNode(id, level);
 }
 
 
+Node* findChild(Node* parent, int id) {
+    for (int i = 0; i < parent->numChildren; i++) {
+        if (parent->children[i].id == id) {
+            return &(parent->children[i]);
+        }
+    }
+    return NULL;
+}
 
-Node* leituraArquivo (char* nomearquivo){
-
-    FILE *arquivo = fopen(nomearquivo, "r");
+Node* leituraArquivo(char* nomearquivo) {
+    FILE* arquivo = fopen(nomearquivo, "r");
     DadosEntrada dados;
     Node* root = NULL;
 
-    if(arquivo == NULL){
-
+    if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo. Tente novamente.");
         return NULL;
     }
-                    //     1   2     3     4     5    6     7   8   9    10   11   12   13    14   15    16   17    18   19   20   21  22   23    24   25    26  27  28  29  30
-    while(fscanf(arquivo, "%d, %d, %[^,], %[^,], %d, %[^,], %d, %d, %d, %[^,], %d, %d, %[^,], %d, %[^,], %d, %[^,], %d, %[^,], %d, %d, %d, %[^,], %d, %[^,], %d, %d, %d, %d, %d\n",
+
+    while (fscanf(arquivo, "%d, %d, %[^,], %[^,], %d, %[^,], %d, %d, %d, %[^,], %d, %d, %[^,], %d, %[^,], %d, %[^,], %d, %[^,], %d, %d, %d, %[^,], %d, %[^,], %d, %d, %d, %d, %d\n",
            &dados.id, &dados.idSolution, dados.solutionName, dados.solutionInitials, &dados.idTeacher,
            dados.teacherName, &dados.idDay, &dados.idInstitution, &dados.idUnit, dados.unitName,
            &dados.idUnitCourse, &dados.idCourse, dados.courseName, &dados.idClass, dados.className,
            &dados.idDiscipline, dados.disciplineName, &dados.idRoom, dados.roomName, &dados.studentsNumber,
            &dados.sequence, &dados.idBeginSlot, dados.beginTimeName, &dados.idEndSlot, dados.endTimeName,
-           &dados.idYear, &dados.idTerm, &dados.idCollisionType, &dados.collisionLevel, &dados.collisionSize) != EOF){
+           &dados.idYear, &dados.idTerm, &dados.idCollisionType, &dados.collisionLevel, &dados.collisionSize) != EOF) {
 
-            printf("%d, %d, %s, %s, %d, %s, %d, %d, %d, %s, %d, %d, %s, %d, %s, %d, %s, %d, %s, %d, %d, %d, %s, %d, %s, %d, %d, %d, %d, %d\n",
+        printf("%d, %d, %s, %s, %d, %s, %d, %d, %d, %s, %d, %d, %s, %d, %s, %d, %s, %d, %s, %d, %d, %d, %s, %d, %s, %d, %d, %d, %d, %d\n",
             dados.id, dados.idSolution, dados.solutionName, dados.solutionInitials, dados.idTeacher,
             dados.teacherName, dados.idDay, dados.idInstitution, dados.idUnit, dados.unitName,
             dados.idUnitCourse, dados.idCourse, dados.courseName, dados.idClass, dados.className,
             dados.idDiscipline, dados.disciplineName, dados.idRoom, dados.roomName, dados.studentsNumber,
             dados.sequence, dados.idBeginSlot, dados.beginTimeName, dados.idEndSlot, dados.endTimeName,
             dados.idYear, dados.idTerm, dados.idCollisionType, dados.collisionLevel, dados.collisionSize);
-            
-            if(root == NULL){
-                root = createNode(-1);
-            }
 
-            Node* idInstitutionNode = NULL;
-
-            // Verificar se o nó  já existe
-            if (root != NULL) {
-                idInstitutionNode = root->filho;
-                while (idInstitutionNode != NULL) {
-                    if (idInstitutionNode->id == dados.idInstitution) {
-                        break;  // O nó já existe, sair do loop
-                    }
-                    idInstitutionNode = idInstitutionNode->irmao;
-                }
-            }
-
-            // Se o nó  ainda não existe, criar e adicionar à árvore
-            if (idInstitutionNode == NULL) {
-                idInstitutionNode = createNode(dados.idInstitution);
-                addFilho(root, idInstitutionNode);
-            }
-
-            // Repetir o padrão para os outros nós
-            Node* idUnitNode = NULL;
-            if (idInstitutionNode != NULL) {
-                idUnitNode = idInstitutionNode->filho;
-                while (idUnitNode != NULL) {
-                    if (idUnitNode->id == dados.idUnit) {
-                        break;  
-                    }
-                    idUnitNode = idUnitNode->irmao;
-                }
-            }
-
-            if (idUnitNode == NULL) {
-                idUnitNode = createNode(dados.idUnit);
-                addFilho(idInstitutionNode, idUnitNode);
-            }
-
-            Node* idCourseNode = NULL;
-            if (idUnitNode != NULL) {
-                idCourseNode = idUnitNode->filho;
-                while (idCourseNode != NULL) {
-                    if (idCourseNode->id == dados.idCourse) {
-                        break;  
-                    }
-                    idCourseNode = idCourseNode->irmao;
-                }
-            }
-
-            if (idCourseNode == NULL) {
-                idCourseNode = createNode(dados.idCourse);
-                addFilho(idUnitNode, idCourseNode);
-            }
-
-            Node* idClassNode = NULL;
-            if (idCourseNode != NULL) {
-                idClassNode = idCourseNode->filho;
-                while (idClassNode != NULL) {
-                    if (idClassNode->id == dados.idClass) {
-                        break;  
-                    }
-                    idClassNode = idClassNode->irmao;
-                }
-            }
-
-            if (idClassNode == NULL) {
-                idClassNode = createNode(dados.idClass);
-                addFilho(idCourseNode, idClassNode);
-            }
-
-            Node* idDisciplineNode = NULL;
-            if (idClassNode != NULL) {
-                idDisciplineNode = idClassNode->filho;
-                while (idDisciplineNode != NULL) {
-                    if (idDisciplineNode->id == dados.idDiscipline) {
-                        break;  
-                    }
-                    idDisciplineNode = idDisciplineNode->irmao;
-                }
-            }
-
-            if (idDisciplineNode == NULL) {
-                idDisciplineNode = createNode(dados.idDiscipline);
-                addFilho(idClassNode, idDisciplineNode);
-            }
-
-            Node* idRoomNode = createNode(dados.idRoom);
-            addFilho(idDisciplineNode, idRoomNode);
-
-            Node* idBeginSlotNode = createNode(dados.idBeginSlot);
-            addFilho(idRoomNode, idBeginSlotNode);
-
-            Node* idEndSlotNode = createNode(dados.idEndSlot);
-            addFilho(idBeginSlotNode, idEndSlotNode);
-
-            Node* idTeacherNode = createNode(dados.idTeacher);
-            addFilho(idEndSlotNode, idTeacherNode);
-            
-
+        if (root == NULL) {
+            root = createNode(-1, 0); // Nível da raiz é 0
         }
 
-    printf("\n-------------------------");
-    printf("Arquivo lido com sucesso!");
-    printf("-------------------------\n");
+        Node* institutionNode = findChild(root, dados.idInstitution);
+        if (institutionNode == NULL) {
+            addChild(root, dados.idInstitution, 1); // Nível da instituição é 1
+            institutionNode = &(root->children[root->numChildren - 1]);
+        }
+
+        Node* unitNode = findChild(institutionNode, dados.idUnit);
+        if (unitNode == NULL) {
+            addChild(institutionNode, dados.idUnit, 2); // Nível da unidade é 2
+            unitNode = &(institutionNode->children[institutionNode->numChildren - 1]);
+        }
+
+        Node* courseNode = findChild(unitNode, dados.idCourse);
+        if (courseNode == NULL) {
+            addChild(unitNode, dados.idCourse, 3); // Nível do curso é 3
+            courseNode = &(unitNode->children[unitNode->numChildren - 1]);
+        }
+
+        Node* classNode = findChild(courseNode, dados.idClass);
+        if (classNode == NULL) {
+            addChild(courseNode, dados.idClass, 4); // Nível da turma é 4
+            classNode = &(courseNode->children[courseNode->numChildren - 1]);
+        }
+
+        Node* disciplineNode = findChild(classNode, dados.idDiscipline);
+        if (disciplineNode == NULL) {
+            addChild(classNode, dados.idDiscipline, 5); // Nível da disciplina é 5
+            disciplineNode = &(classNode->children[classNode->numChildren - 1]);
+        }
+
+        Node* dayNode = findChild(disciplineNode, dados.idDay);
+        if(dayNode == NULL){
+            addChild(disciplineNode, dados.idDay, 6); //Nível do dia é 6
+            dayNode = &(disciplineNode->children[disciplineNode->numChildren - 1]);
+        }
+
+        Node* beginTimeNode = findChild(dayNode, dados.idBeginSlot);
+        if(beginTimeNode == NULL){
+            addChild(dayNode, dados.idBeginSlot, 7); // Nível do horário inicial é 7
+            beginTimeNode = &(dayNode->children[dayNode->numChildren - 1]);
+        }
+
+        Node* endTimeNode = findChild(beginTimeNode, dados.idEndSlot);
+        if(endTimeNode == NULL){
+            addChild(beginTimeNode, dados.idEndSlot, 8); //Nível do horário final é 8
+            endTimeNode = &(beginTimeNode->children[beginTimeNode->numChildren - 1]);
+        }
+
+        Node* idTeacherNode = findChild(endTimeNode, dados.idTeacher);
+        if(idTeacherNode == NULL){
+            addChild(endTimeNode, dados.idTeacher, 9); //Nível do professor é 9
+            idTeacherNode = &(endTimeNode->children[endTimeNode->numChildren - 1]);
+        }
+
+        Node* roomNode = findChild(idTeacherNode, dados.idRoom);
+        if (roomNode == NULL) {
+            addChild(idTeacherNode, dados.idRoom, 10);  //Nível da sala é 10
+            roomNode = &(idTeacherNode->children[idTeacherNode->numChildren - 1]);
+        }
+
+        Node* idLine = findChild(roomNode, dados.id);
+        if (idLine == NULL){
+            addChild(roomNode, dados.id, 11); // Nivel do id único da linha é 11
+            idLine = &(roomNode->children[roomNode->numChildren - 1]);
+        }
+    }
 
     fclose(arquivo);
-
     return root;
 }
 
-
-void imprimirArvoreAux(Node* no, int nivel) {
-    if (no == NULL) {
-        return;
+void printTree(Node* node, int level) {
+    for (int i = 0; i < level; i++) {
+        printf("  ");
     }
-
-    for (int i = 0; i < nivel; i++) {
-        printf("  "); // Duas espaços por nível de indentação
-    }
-    printf("%d\n", no->id);
-
-    Node* filho = no->filho;
-    while (filho != NULL) {
-        imprimirArvoreAux(filho, nivel + 1);
-        filho = filho->irmao;
+    printf("id: %d\n", node->id);
+    for (int i = 0; i < node->numChildren; i++) {
+        printTree(&node->children[i], level + 1);
     }
 }
 
-void imprimirArvore(Node* raiz) {
-    imprimirArvoreAux(raiz, 0);
-}
-
-
-int main(){
+int main() {
 
     char nomeArquivo [100];
     printf("Digite o caminho do arquivo a ser lido: ");
@@ -253,11 +197,14 @@ int main(){
         printf("\n-----------------------\n");
         printf("\nÁrvore n-ária impressa:\n");
         printf("\n-----------------------\n");
-        imprimirArvore(root);
+        printTree(root, 0);
+
     }
 
     printf("\n-------------------------\n");
     printf("FIM!");
     printf("\n-------------------------\n");
 
+    return 0;
 }
+
