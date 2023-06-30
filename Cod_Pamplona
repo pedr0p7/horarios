@@ -139,22 +139,77 @@ Node* leituraArquivo(char* nomearquivo) {
     return root;
 }
 void printCollisions(Node* node, FILE* saidaArquivo) {
-    if (node == NULL) {
-        return;
-    }
+    if (node != NULL) {
+        if (node->data != NULL) {
+            DadosEntrada* dados = (DadosEntrada*)node->data;
 
-    if (node->level == 5 && node->data != NULL) {
-        DadosEntrada* dados = node->data;
-        fprintf(saidaArquivo, "Colisão encontrada:\n");
-        fprintf(saidaArquivo, "Professor: %s\n", dados->teacherName);
-        fprintf(saidaArquivo, "Disciplina: %s\n", dados->disciplineName);
-        fprintf(saidaArquivo, "Sala de aula: %s\n", dados->roomName);
-        fprintf(saidaArquivo, "Horário: %s - %s\n", dados->beginTimeName, dados->endTimeName);
-        fprintf(saidaArquivo, "-----------------------\n");
-    }
+            if (dados->idInstitution != 0) {
+                fprintf(saidaArquivo, "Instituição %02d\n", dados->idInstitution);
+            }
 
-    for (int i = 0; i < node->numChildren; i++) {
-        printCollisions(node->children[i], saidaArquivo);
+            if (dados->idUnit != 0) {
+                fprintf(saidaArquivo, "\tUnidade %02d\n", dados->idUnit);
+            }
+
+            if (dados->idCourse != 0) {
+                fprintf(saidaArquivo, "\t\tCurso %04d\n", dados->idCourse);
+            }
+
+            if (dados->idClass != 0) {
+                fprintf(saidaArquivo, "\t\t\tTurma %02d\n", dados->idClass);
+            }
+
+            if (dados->idDay != 0) {
+                const char* dayName = "";
+
+                switch (dados->idDay) {
+                    case 1:
+                        dayName = "dom";
+                        break;
+                    case 2:
+                        dayName = "seg";
+                        break;
+                    case 3:
+                        dayName = "ter";
+                        break;
+                    case 4:
+                        dayName = "qua";
+                        break;
+                    case 5:
+                        dayName = "qui";
+                        break;
+                    case 6:
+                        dayName = "sex";
+                        break;
+                    case 7:
+                        dayName = "sáb";
+                        break;
+                }
+
+                int beginSlotHour = dados->idBeginSlot / 4;
+                int beginSlotMinute = (dados->idBeginSlot % 4) * 15;
+
+                int endSlotHour = (dados->idBeginSlot + dados->idEndSlot) / 4;
+                int endSlotMinute = ((dados->idBeginSlot + dados->idEndSlot) % 4) * 15;
+
+                fprintf(saidaArquivo, "\t\t\t\t%s %02d:%02d - %02d:%02d -> ", dayName, beginSlotHour, beginSlotMinute, endSlotHour, endSlotMinute);
+            }
+
+            if (dados->idCollisionType != 0) {
+                if (dados->idCollisionType == 1) {
+                    fprintf(saidaArquivo, "Professor, total");
+                } else {
+                    fprintf(saidaArquivo, "Professor, parcial");
+                }
+            }
+
+            fprintf(saidaArquivo, " -> [Instituição: %02d, Unidade: %02d, Curso: %04d, Turma: %02d, Prof: %04d, Sala: %04d]\n",
+                   dados->idInstitution, dados->idUnit, dados->idCourse, dados->idClass, dados->idTeacher, dados->idRoom);
+        }
+
+        for (int i = 0; i < node->numChildren; i++) {
+            printCollisions(node->children[i], saidaArquivo);
+        }
     }
 }
 
@@ -181,7 +236,6 @@ int main() {
 
         FILE* saidaArquivo = fopen("saida.txt", "w"); // Abre o arquivo de saída
         printCollisions(root, saidaArquivo);
-        fclose(saidaArquivo); // Fecha o arquivo de saída
     }
 
     printf("-------------------------\n");
