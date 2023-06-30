@@ -1,267 +1,53 @@
-a main.c
-#includ <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include "arvore.h"
-
-int main(){
-
-    char nomeArquivo [100];
-    printf("Digite o caminho do arquivo a ser lido: ");
-    scanf("%s", nomeArquivo);
-
-    printf("\n-------------------------\n");
-    printf("Iniciando leitura...");
-    printf("\n-------------------------\n");
-    Node* root = leituraArquivo(nomeArquivo);
-
-    if(root != NULL){
-        printf("\n-----------------------\n");
-        printf("\nArvore n-aria impressa:\n");
-        printf("\n-----------------------\n");
-        imprimirArvore(root);
-
-    printf("\n-----------------------\n");
-    printf("\nColisoes encontradas:\n");
-    printf("\n-----------------------\n");
-    imprimirColisoes(root);
-}
-    printf("\n-------------------------\n");
-    printf("FIM!");
-    printf("\n-------------------------\n");
-
-}
------------------------------------------------------------------------------------------------------------
-a arvore.h
-#ifndef ARVORE_H_INCLUDED
-#define ARVORE_H_INCLUDED
-
-#include <stdbool.h>
-
-typedef struct {
-    int id;
-    int idSolution;
-    char solutionName[100];
-    char solutionInitials[50];
-    int idTeacher;a
-    char teacherName[100];
-    int idDay;
-    int idInstitution;
-    int idUnit;
-    char unitName[100];
-    int idUnitCourse;
-    int idCourse;
-    char courseName[100];
-    int idClass;
-    char className[100];
-    int idDiscipline;
-    char disciplineName[100];
-    int idRoom;
-    char roomName[100];
-    int studentsNumber;
-    int sequence;
-    int idBeginSlot;
-    char beginTimeName[50];
-    int idEndSlot;
-    char endTimeName[50];
-    int idYear;
-    int idTerm;
-    int idCollisionType;
-    int collisionLevel;
-    int collisionSize;
-} DadosEntrada;
-
-typedef struct Node {
-    int id;
-    int level;
-    struct Node** children;
-    int numChildren;
-    struct Node* parent;
-    DadosEntrada* data;
-} Node;
-
-Node* createNode(int id, int level);
-void addChild(Node* parent, Node* child);
-Node* findChild(Node* parent, int id);
-Node* leituraArquivo(char* nomearquivo);
-void imprimirArvore(Node* node);
-void identificarColisoes(Node* node);
-void imprimirColisoes(Node* root);
-
-#endif
---------------------------------------------------------------------------------------------------------
-a arvore.c
-#include "arvore.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <locale.h>
-
-Node* createNode(int id, int level) {
-    Node* node = (Node*)malloc(sizeof(Node));
-    node->id = id;
-    node->level = level;
-    node->children = NULL;
-    node->numChildren = 0;
-    node->parent = NULL;
-    node->data = NULL;
-    return node;
-}
-
-void addChild(Node* parent, Node* child) {
-    parent->numChildren++;
-    parent->children = realloc(parent->children, parent->numChildren * sizeof(Node*));
-    parent->children[parent->numChildren - 1] = child;
-    child->parent = parent;
-}
-
-Node* findChild(Node* parent, int id) {
-    for (int i = 0; i < parent->numChildren; i++) {
-        if (parent->children[i]->id == id) {
-            return parent->children[i];
-        }
-    }
-    return NULL;
-}
-
-Node* leituraArquivo(char* nomearquivo) {
-    FILE* arquivo = fopen(nomearquivo, "r");
-    Node* root = NULL;
-
-    if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo. Tente novamente.\n");
-        return NULL;
-    }
-
-    char linha[1024];
-    // Ler cada linha do arquivo
-    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
-        DadosEntrada dados;
-
-        // Fazer a leitura dos campos separados por vírgula
-        if (sscanf(linha, "%d, %d, %49[^,], %9[^,], %d, %49[^,], %d, %d, %d, %49[^,], %d, %d, %49[^,], %d, %49[^,], %d, %49[^,], %d, %49[^,], %d, %d, %d, %10[^,], %d, %10[^,], %d, %d, %d, %d, %d",
-                   &dados.id, &dados.idSolution, dados.solutionName, dados.solutionInitials, &dados.idTeacher,
-                   dados.teacherName, &dados.idDay, &dados.idInstitution, &dados.idUnit, dados.unitName,
-                   &dados.idUnitCourse, &dados.idCourse, dados.courseName, &dados.idClass, dados.className,
-                   &dados.idDiscipline, dados.disciplineName, &dados.idRoom, dados.roomName, &dados.studentsNumber,
-                   &dados.sequence, &dados.idBeginSlot, dados.beginTimeName, &dados.idEndSlot, dados.endTimeName,
-                   &dados.idYear, &dados.idTerm, &dados.idCollisionType, &dados.collisionLevel, &dados.collisionSize) != 30) {
-            continue;
-        }
-        if (root == NULL) {
-            root = createNode(0, 0); // Nível da raiz é 0
-        }
-
-        Node* dayNode = findChild(root, dados.idDay);
-        if (dayNode == NULL) {
-            dayNode = createNode(dados.idDay, 1); // Nível do dia é 1
-            addChild(root, dayNode);
-        }
-
-        Node* beginSlotNode = findChild(dayNode, dados.idBeginSlot);
-        if (beginSlotNode == NULL) {
-            beginSlotNode = createNode(dados.idBeginSlot, 2); // Nível do início do slot é 2
-            addChild(dayNode, beginSlotNode);
-        }
-
-        Node* endSlotNode = findChild(beginSlotNode, dados.idEndSlot);
-        if (endSlotNode == NULL) {
-            endSlotNode = createNode(dados.idEndSlot, 3); // Nível do fim do slot é 3
-            addChild(beginSlotNode, endSlotNode);
-        }
-
-        Node* roomNode = findChild(endSlotNode, dados.idRoom);
-        if (roomNode == NULL) {
-            roomNode = createNode(dados.idRoom, 4); // Nível da sala de aula é 4
-            addChild(endSlotNode, roomNode);
-        }
-
-        Node* teacherNode = findChild(roomNode, dados.idTeacher);
-        if (teacherNode == NULL) {
-            teacherNode = createNode(dados.idTeacher, 5); // Nível do professor é 5
-            addChild(roomNode, teacherNode);
-        }
-
-        // Armazenar os dados relevantes no nó do professor
-        teacherNode->data = (DadosEntrada*)malloc(sizeof(DadosEntrada));
-        memcpy(teacherNode->data, &dados, sizeof(DadosEntrada));
-    }
-
-    fclose(arquivo);
-    return root;
-}
-
-void imprimirArvore(Node* node) {
-    printf("ID: %d, Level: %d\n", node->id, node->level);
-
-    if (node->data != NULL) {
-        printf("Dados:\n");
-        printf("ID Day: %d\n", node->data->idDay);
-        printf("ID Begin Slot: %d\n", node->data->idBeginSlot);
-        printf("ID End Slot: %d\n", node->data->idEndSlot);
-        printf("ID Room: %d\n", node->data->idRoom);
-        printf("ID Teacher: %d\n", node->data->idTeacher);
-        printf("---------------------------\n");
-    }
-
-    for (int i = 0; i < node->numChildren; i++) {
-        imprimirArvore(node->children[i]);
-    }
-}
-
-void identificarColisoes(Node* node) {
+void printCollisions(Node* node, FILE* saidaArquivo) {
     if (node == NULL) {
         return;
     }
 
-    if (node->data != NULL) {
-        DadosEntrada* dados = (DadosEntrada*)node->data;
-
-        printf("Dia: %d\n", dados->idDay);
-        printf("Sala: %d\n", dados->idRoom);
-        printf("Período: %d\n", dados->idTerm);
-        printf("Professor: %d\n", dados->idTeacher);
-
-        // Realize as operações necessárias para identificar colisões
-        // ...
-
-        printf("---------------------------\n");
+    if (node->level == 5 && node->data != NULL) {
+        DadosEntrada* dados = node->data;
+        fprintf(saidaArquivo, "Colisão encontrada:\n");
+        fprintf(saidaArquivo, "Professor: %s\n", dados->teacherName);
+        fprintf(saidaArquivo, "Disciplina: %s\n", dados->disciplineName);
+        fprintf(saidaArquivo, "Sala de aula: %s\n", dados->roomName);
+        fprintf(saidaArquivo, "Horário: %s - %s\n", dados->beginTimeName, dados->endTimeName);
+        fprintf(saidaArquivo, "-----------------------\n");
     }
 
     for (int i = 0; i < node->numChildren; i++) {
-        identificarColisoes(node->children[i]);
+        printCollisions(node->children[i], saidaArquivo);
     }
 }
 
-void imprimirColisoes(Node* root) {
-    setlocale(LC_ALL, ""); // Ativa a localização para exibição correta de acentos
+int main() {
+    char nomeArquivo[100];
+    printf("Digite o caminho do arquivo a ser lido: ");
+    scanf("%s", nomeArquivo);
+
+    FILE* arquivo = fopen(nomeArquivo, "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo. Tente novamente.\n");
+        return 1;
+    }
+
+    printf("-------------------------\n");
+    printf("Iniciando leitura...\n");
+    printf("-------------------------\n");
+    Node* root = leituraArquivo(nomeArquivo);
 
     if (root != NULL) {
-        // Verifica se o nó possui dados de colisão
-        if (root->data != NULL) {
-            DadosEntrada* dados = (DadosEntrada*)root->data;
+        printf("-----------------------\n");
+        printf("Colisões:\n");
+        printf("-----------------------\n");
 
-            printf("%s\n", dados->unitName);
-            printf("%s\n", dados->courseName);
-            printf("Turma %02d\n", dados->idClass);
-
-            printf("%s %s–%s – ", dados->beginTimeName, dados->endTimeName);
-
-            if (dados->idCollisionType == 1) {
-                printf("Professor, total");
-            } else {
-                printf("Professor, parcial");
-            }
-
-            printf(" -> [Instituição: %02d, Unidade: %02d, Curso: %04d, Turma %02d, Prof: %04d, Sala: %04d]\n",
-                   dados->idInstitution, dados->idUnit, dados->idCourse, dados->idClass, dados->idTeacher, dados->idRoom);
-        }
-
-        for (int i = 0; i < root->numChildren; i++) {
-            imprimirColisoes(&(root->children[i]));
-        }
+        FILE* saidaArquivo = fopen("saida.txt", "w"); // Abre o arquivo de saída
+        printCollisions(root, saidaArquivo);
+        fclose(saidaArquivo); // Fecha o arquivo de saída
     }
+
+    printf("-------------------------\n");
+    printf("FIM!\n");
+    printf("-------------------------\n");
+
+    fclose(arquivo);
+    return 0;
 }
-
-
