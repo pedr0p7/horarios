@@ -235,14 +235,14 @@ void printTree(Node* node, int level) {
 
 int measureColissionSize1(Node* node1){
     int valueColissionType;
-    valueColissionType = (node1->data->idEndSlot - node1->data->idBeginSlot)*30;
+    valueColissionType = (((node1->data->idEndSlot - node1->data->idBeginSlot)*30)+30);
 
     return valueColissionType;
 }
 
 int measureColissionSize2(Node* node1, Node* node2){
     int valueColissionType;
-    valueColissionType = (node1->data->idEndSlot - node2->data->idBeginSlot)*30;
+    valueColissionType = (((node1->data->idEndSlot - node2->data->idBeginSlot)*30)+30);
 
     return valueColissionType;
 }
