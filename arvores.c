@@ -1,8 +1,6 @@
 #include "arvores.h"
 
 
-
-
 Node* createNode(int id, int level) {
     Node* node = (Node*)malloc(sizeof(Node));
     node->id = id;

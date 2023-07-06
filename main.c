@@ -5,7 +5,7 @@ int main() {
 
     setlocale(LC_ALL, "UTF-8");
 
-    char nomeArquivo [100];
+    char nomeArquivo [200];
     printf("\n------------------------------------------------------------------------------------------------------------\n");
     printf("Detectar Colisões de Horários");
     printf("\n------------------------------------------------------------------------------------------------------------\n");
@@ -18,7 +18,7 @@ int main() {
     Node* root = leituraArquivoeGerarArvore(nomeArquivo);
 
     if(root != NULL){
-        char arquivoSaida [100];
+        char arquivoSaida [200];
         printf("\n------------------------------------------------------------------------------------------------------------\n");
         printf("Digite o nome do arquivo de saída com o final .txt ou .csv: ");
         scanf("%s", arquivoSaida);
