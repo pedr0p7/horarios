@@ -1,3 +1,5 @@
+#Final
+
 **Arquivo com as implementações da árvore e funções
 
 https://github.com/pedr0p7/horarios/blob/main/arvores.c
