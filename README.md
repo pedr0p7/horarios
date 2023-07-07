@@ -1,11 +1,11 @@
 # Horários
 
-- Update Final
+***Update Final***
 
-- [main.c](https://github.com/pedr0p7/horarios/blob/main/main.c)
-- [arvores.c](https://github.com/pedr0p7/horarios/blob/main/arvores.c)
-- [arvores.h](https://github.com/pedr0p7/horarios/blob/main/arvores.h)
-- [dados.csv](https://github.com/pedr0p7/horarios/blob/main/main.c)
+- [Arquivo (main.c)](https://github.com/pedr0p7/horarios/blob/main/arquivos/main.c)
+- [Arquivo (arvores.c)](https://github.com/pedr0p7/horarios/blob/main/arquivos/arvores.c)
+- [Arquivo (arvores.h)](https://github.com/pedr0p7/horarios/blob/main/arquivos/arvores.h)
+- [Arquivo (dados.csv)](https://github.com/pedr0p7/horarios/blob/main/arquivos/main.c)
 
 Trabalho #01 da matéria de AED2 - UFG.
 
