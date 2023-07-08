@@ -7,34 +7,37 @@
 #include <stdbool.h>
 #include <locale.h>
 
+#define MAX_NAME_LENGTH         100
+#define TIME_NAME_LENGTH        11
+#define INITIAL_SOLUTION_LENGTH 10
 
 typedef struct  {
     
     int id;
     int idSolution;
-    char solutionName[50];
-    char solutionInitials[10];
+    char solutionName[MAX_NAME_LENGTH];
+    char solutionInitials[INITIAL_SOLUTION_LENGTH];
     int idTeacher;
-    char teacherName[50];
+    char teacherName[MAX_NAME_LENGTH];
     int idDay;
     int idInstitution;
     int idUnit;
-    char unitName[50];
+    char unitName[MAX_NAME_LENGTH];
     int idUnitCourse;
     int idCourse;
-    char courseName[50];
+    char courseName[MAX_NAME_LENGTH];
     int idClass;
-    char className[50];
+    char className[MAX_NAME_LENGTH];
     int idDiscipline;
-    char disciplineName[50];
+    char disciplineName[MAX_NAME_LENGTH];
     int idRoom;
-    char roomName[50];
+    char roomName[MAX_NAME_LENGTH];
     int studentsNumber;
     int sequence;
     int idBeginSlot;
-    char beginTimeName[11];
+    char beginTimeName[TIME_NAME_LENGTH];
     int idEndSlot;
-    char endTimeName[11];
+    char endTimeName[TIME_NAME_LENGTH];
     int idYear;
     int idTerm;
     int idCollisionType;
@@ -74,22 +77,33 @@ typedef struct infoSaida {
 
 
 Node* createNode(int id, int level);
+
 void addChild(Node* parent, Node* child);
+
 Node* findChild(Node* parent, int id);
+
 Node* leituraArquivoeGerarArvore(char* nomearquivo);
+
 void printTree(Node* node, int level);
+
 int measureColissionSize1(Node* node1);
+
 int measureColissionSize2(Node* node1, Node* node2);
+
 void checkColissions(Node* root);
+
 infoSaida* runTree(Node* node);
+
 void createList(Node* node, int level, infoSaida** list);
+
 void freeTree(Node* root);
+
 void freeList(infoSaida* head);
+
 void printInfoList(infoSaida* list);
+
 void gerarArquivoSaida(char* nomeArquivoEntrada, char* nomeArquivoSaida, infoSaida* newInfo);
-infoSaida* getTail(infoSaida* head);
-infoSaida* partition(infoSaida* head, infoSaida* end, infoSaida** newHead, infoSaida** newEnd);
-infoSaida* quickSortRecur(infoSaida* head, infoSaida* end);
+
 void quickSort(infoSaida** head);
 
 #endif
