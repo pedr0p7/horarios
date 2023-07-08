@@ -1,11 +1,13 @@
 
 #include "arvores.h"
 
+#define MAX_NAMEFILE_LENGTH 250
+
 int main() {
 
     setlocale(LC_ALL, "UTF-8");
 
-    char nomeArquivo [200];
+    char nomeArquivo [MAX_NAMEFILE_LENGTH];
     printf("\n------------------------------------------------------------------------------------------------------------\n");
     printf("Detectar Colisões de Horários");
     printf("\n------------------------------------------------------------------------------------------------------------\n");
@@ -18,7 +20,7 @@ int main() {
     Node* root = leituraArquivoeGerarArvore(nomeArquivo);
 
     if(root != NULL){
-        char arquivoSaida [200];
+        char arquivoSaida [MAX_NAMEFILE_LENGTH];
         printf("\n------------------------------------------------------------------------------------------------------------\n");
         printf("Digite o nome do arquivo de saída com o final .txt ou .csv: ");
         scanf("%s", arquivoSaida);
